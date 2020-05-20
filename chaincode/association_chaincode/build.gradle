@@ -1,0 +1,31 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.3'
+    id 'java'
+}
+
+group 'bosh.tech'
+version '1.0-SNAPSHOT'
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://www.jitpack.io" }
+}
+
+dependencies {
+    compile group: 'org.hyperledger.fabric-chaincode-java', name: 'fabric-chaincode-shim', version: '1.4.6'
+
+}
+
+shadowJar {
+    baseName = 'chaincode'
+    version = null
+    classifier = null
+
+    manifest {
+        attributes 'Main-Class': 'bosh.tech.AssociationChaincode'
+    }
+}

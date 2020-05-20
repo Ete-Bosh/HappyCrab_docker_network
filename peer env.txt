@@ -1,0 +1,37 @@
+		ASSOCIATION
+peer0:	
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabAssociation.com/users/Admin@CrabAssociation.com/msp
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabAssociation.com/peers/peer0.CrabAssociation.com/tls/ca.crt
+CORE_PEER_ADDRESS=peer0.CrabAssociation.com:7051
+CORE_PEER_LOCALMSPID=CrabAssociationMSP
+
+
+
+		PRODUCER
+pee0:
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabProducer.com/users/Admin@CrabProducer.com/msp
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabProducer.com/peers/peer0.CrabProducer.com/tls/ca.crt
+CORE_PEER_ADDRESS=peer0.CrabProducer.com:8051
+CORE_PEER_LOCALMSPID=CrabProducerMSP
+
+
+
+
+
+		CARRIER
+pee0:
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabCarrier.com/users/Admin@CrabCarrier.com/msp
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabCarrier.com/peers/peer0.CrabCarrier.com/tls/ca.crt
+CORE_PEER_ADDRESS=peer0.CrabCarrier.com:9051
+CORE_PEER_LOCALMSPID=CrabCarrierMSP
+
+
+
+
+		SELLER
+pee0:
+CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabSeller.com/users/Admin@CrabSeller.com/msp
+CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabSeller.com/peers/peer0.CrabSeller.com/tls/ca.crt
+CORE_PEER_ADDRESS=peer0.CrabSeller.com:10051
+CORE_PEER_LOCALMSPID=CrabSellerMSP
+

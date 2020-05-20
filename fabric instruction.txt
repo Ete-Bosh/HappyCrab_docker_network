@@ -1,0 +1,44 @@
+
+cryptogen generate --config=./crypto-config.yaml
+
+export FABRIC_CFG_PATH=$PWD
+configtxgen  -profile SoloCrabGenesis -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
+
+export CHANNEL_NAME=crabchannel
+configtxgen -profile SoloCrabChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+
+configtxgen -profile SoloCrabChannel -outputAnchorPeersUpdate ./channel-artifacts/CrabAssociationMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CrabAssociationMSP
+configtxgen -profile SoloCrabChannel -outputAnchorPeersUpdate ./channel-artifacts/CrabProducerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CrabProducerMSP
+configtxgen -profile SoloCrabChannel -outputAnchorPeersUpdate ./channel-artifacts/CrabCarrierMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CrabCarrierMSP
+configtxgen -profile SoloCrabChannel -outputAnchorPeersUpdate ./channel-artifacts/CrabSellerMSPanchors.tx -channelID $CHANNEL_NAME -asOrg CrabSellerMSP
+
+docker-compose -f docker-compose-cli.yaml up -d
+docker exec -it cli bash
+
+export CHANNEL_NAME=crabchannel
+peer channel create -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+peer channel join -b crabchannel.block
+
+peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/CrabAssociationMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/CrabProducerMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/CrabCarrierMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+peer channel update -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/CrabSellerMSPanchors.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
+
+
+peer chaincode install -n crabcc -v 1.0 -l java -p /opt/gopath/src/chaincode/association_chaincode/
+
+peer chaincode instantiate -o orderer.example.com:7050 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n crabcc -v 1.0 -c '{"Args":["init"]}' -P "OR ('CrabAssociationMSP.member','CrabProducerMSP.member','CrabCarrierMSP.member','CrabSellerMSP.member')"
+
+
+peer chaincode invoke -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C $CHANNEL_NAME -n crabcc --peerAddresses peer0.CrabAssociation.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabAssociation.com/peers/peer0.CrabAssociation.com/tls/ca.crt  -c '{"Args":["invoke","a","jsonstring1"]}'
+
+peer chaincode query -C $CHANNEL_NAME -n crabcc -c '{"Args":["query","a"]}'
+
+//docker-compose -f docker-compose-cli.yaml down --volumes --remove-orphans
+//docker stop $(docker ps -a -q)
+//docker ps -qa|xargs docker rm --volumes
+
+
+

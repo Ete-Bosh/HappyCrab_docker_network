@@ -1,0 +1,108 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+volumes:
+  orderer.example.com:
+
+  peer0.CrabAssociation.com:
+  
+  peer0.CrabProducer.com:
+
+
+  peer0.CrabCarrier.com:
+
+
+  peer0.CrabSeller.com:
+
+
+networks:
+  byfn:
+
+services:
+
+  orderer.example.com:
+    extends:
+      file:   base/docker-compose-base.yaml
+      service: orderer.example.com
+    container_name: orderer.example.com
+    networks:
+      - byfn
+
+  peer0.CrabAssociation.com:
+    container_name: peer0.CrabAssociation.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.CrabAssociation.com
+    networks:
+      - byfn
+
+  peer0.CrabProducer.com:
+    container_name: peer0.CrabProducer.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.CrabProducer.com
+    networks:
+      - byfn
+
+
+
+  peer0.CrabCarrier.com:
+    container_name: peer0.CrabCarrier.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.CrabCarrier.com
+    networks:
+      - byfn
+
+
+
+  peer0.CrabSeller.com:
+    container_name: peer0.CrabSeller.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.CrabSeller.com
+    networks:
+      - byfn
+
+
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:$IMAGE_TAG
+    tty: true
+    stdin_open: true
+    environment:
+      - SYS_CHANNEL=$SYS_CHANNEL
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.CrabAssociation.com:7051
+      - CORE_PEER_LOCALMSPID=CrabAssociationMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabAssociation.com/peers/peer0.CrabAssociation.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabAssociation.com/peers/peer0.CrabAssociation.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabAssociation.com/peers/peer0.CrabAssociation.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/CrabAssociation.com/users/Admin@CrabAssociation.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src/chaincode/
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - orderer.example.com
+      - peer0.CrabAssociation.com
+      - peer0.CrabProducer.com
+      - peer0.CrabCarrier.com
+      - peer0.CrabSeller.com
+    networks:
+      - byfn
